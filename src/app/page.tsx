@@ -5,6 +5,7 @@ import HeroSection from "@/components/landing/HeroSection";
 import ProblemSection from "@/components/landing/ProblemSection";
 import SolutionSection from "@/components/landing/SolutionSection";
 import CTASection from "@/components/landing/CTASection";
+import TeamSection from "@/components/landing/TeamSection";
 
 export default function Home() {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
         <SolutionSection />
         {/* Additional sections would be added here */}
         {/* <TestimonialsSection /> */}
-        {/* <TeamSection /> */}
+        <TeamSection />
         {/* <FAQSection /> */}
         <CTASection />
       </main>
