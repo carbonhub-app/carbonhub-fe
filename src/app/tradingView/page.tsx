@@ -17,28 +17,17 @@ export default function CarbonTradingPage() {
   const [balance, setBalance] = useState<number | null>(null);
   const [available, setAvailable] = useState<number | null>(null);
 
-  const [orderSize, setOrderSize] = useState<number | "">("");
-  const [leverage, setLeverage] = useState(10);
-  const [orderType, setOrderType] = useState("Market");
+  const [orderSize, setOrderSize] = useState<number>(1);
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [price, setPrice] = useState(""); // For limit order
 
-  const handleOrderTypeChange = (value: string) => {
-    setOrderType(value);
-    if (value === "Market") setPrice("");
-  };
-
   const placeOrder = () => {
-    if (orderType === "Limit" && (!price || Number(price) <= 0)) {
-      alert("Please enter a valid price for limit order.");
-      return;
-    }
     if (!orderSize || Number(orderSize) <= 0) {
       alert("Please enter a valid order size.");
       return;
     }
     alert(
-      `Order placed: ${side.toUpperCase()} ${orderSize} credits at ${orderType} order${orderType === "Limit" ? ` (Price: $${price})` : ""} with ${leverage}x leverage`
+      `Order placed: ${side.toUpperCase()} ${orderSize} credits${price ? ` (Price: $${price})` : ""}`
     );
     // Implement API call or further logic here
   };
@@ -92,37 +81,21 @@ export default function CarbonTradingPage() {
               </button>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-semibold" htmlFor="orderType">
-                Order Type
+              <label className="block mb-1 font-semibold" htmlFor="price">
+                Limit Price ($) <span className="text-xs text-slate-400">(Opsional)</span>
               </label>
-              <select
-                id="orderType"
-                className="w-full bg-slate-700 text-white rounded px-3 py-2"
-                value={orderType}
-                onChange={(e) => handleOrderTypeChange(e.target.value)}
-              >
-                <option value="Market">Market</option>
-                <option value="Limit">Limit</option>
-              </select>
+              <input
+                id="price"
+                type="number"
+                min="0"
+                step="0.01"
+                className="w-full bg-slate-700 rounded px-3 py-2 text-white"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="Enter price (optional)"
+              />
             </div>
-            {orderType === "Limit" && (
-              <div className="mb-4">
-                <label className="block mb-1 font-semibold" htmlFor="price">
-                  Limit Price ($)
-                </label>
-                <input
-                  id="price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="w-full bg-slate-700 rounded px-3 py-2 text-white"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="Enter price"
-                />
-              </div>
-            )}
-            <div className="mb-4">
+            <div className="mb-6">
               <label className="block mb-1 font-semibold" htmlFor="orderSize">
                 Order Size (carbon credits)
               </label>
@@ -130,28 +103,22 @@ export default function CarbonTradingPage() {
                 id="orderSize"
                 type="number"
                 min="1"
-                className="w-full bg-slate-700 rounded px-3 py-2 text-white"
+                className="w-full bg-slate-700 rounded px-3 py-2 text-white mb-2"
                 value={orderSize}
-                onChange={(e) => setOrderSize(e.target.value === "" ? "" : Number(e.target.value))}
+                onChange={(e) => setOrderSize(Number(e.target.value))}
                 placeholder="Enter amount"
               />
-            </div>
-            <div className="mb-6">
-              <label className="block mb-1 font-semibold" htmlFor="leverage">
-                Leverage: <span className="text-indigo-400">{leverage}x</span>
-              </label>
               <input
-                id="leverage"
                 type="range"
                 min="1"
-                max="100"
-                value={leverage}
-                onChange={(e) => setLeverage(Number(e.target.value))}
+                max={available || 1000}
+                value={orderSize}
+                onChange={(e) => setOrderSize(Number(e.target.value))}
                 className="w-full accent-indigo-500"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
-                <span>1x</span>
-                <span>100x</span>
+                <span>1</span>
+                <span>{available || 1000}</span>
               </div>
             </div>
             <button
@@ -169,19 +136,13 @@ export default function CarbonTradingPage() {
             <div>
               <span className="font-semibold text-white">Order Info:</span>
               <ul className="mt-1 space-y-1">
-                <li>
-                  <span className="text-slate-300">Order Type:</span> {orderType}
-                </li>
-                {orderType === "Limit" && (
+                {price && (
                   <li>
-                    <span className="text-slate-300">Limit Price:</span> ${price || "-"}
+                    <span className="text-slate-300">Limit Price:</span> ${price}
                   </li>
                 )}
                 <li>
                   <span className="text-slate-300">Order Size:</span> {orderSize || "-"} credits
-                </li>
-                <li>
-                  <span className="text-slate-300">Leverage:</span> {leverage}x
                 </li>
                 <li>
                   <span className="text-slate-300">Side:</span>{" "}
@@ -196,7 +157,7 @@ export default function CarbonTradingPage() {
 
         {/* Right: TradingView Chart */}
         <section className="flex-1 rounded-2xl bg-slate-800 p-6 shadow-2xl flex flex-col border border-slate-700">
-          <div className="flex-grow h-[600px]">
+          <div className="flex-grow h-[400px]">
             <TradingViewWidget />
           </div>
         </section>
