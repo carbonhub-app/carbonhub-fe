@@ -94,6 +94,38 @@ export default function HeroSection() {
       );
     }
 
+    // Define heroImageContent once here to be accessible
+    const heroImageElement = heroImageRef.current;
+    const heroImageContent = heroImageElement?.querySelector("img");
+
+    // Set initial state for hero image ONCE
+    if (heroImageContent) {
+      gsap.set(heroImageContent, {
+        scale: 0.9,
+        transformOrigin: "center bottom",
+        filter: "blur(8px)",
+        opacity: 0,
+        y: 60,
+      });
+    }
+
+    // Hero image animation defined as a function to be called after features appear
+    const animateHeroImage = () => {
+      // heroImageContent is already defined in the useEffect scope
+      if (heroImageContent) {
+        // Animate in immediately after features with scaling and blur effect
+        gsap.to(heroImageContent, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: "blur(0px)",
+          duration: 1.0,
+          delay: 0.1, // Jeda sangat pendek
+          ease: "power3.out",
+        });
+      }
+    };
+
     // Features animation
     if (featureItemsRef.current.length) {
       gsap.fromTo(
@@ -102,47 +134,16 @@ export default function HeroSection() {
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
-          delay: 1.2,
-          stagger: 0.2,
+          duration: 0.5, // Dipercepat lagi
+          delay: 0.8, // Dipercepat lagi
+          stagger: 0.12, // Stagger dipercepat untuk mengurangi jeda antar item
           ease: "power2.out",
+          onComplete: () => {
+            // Trigger hero image animation immediately after features are fully visible
+            animateHeroImage();
+          },
         }
       );
-    }
-
-    // Hero image animation with scroll trigger
-    if (heroImageRef.current) {
-      // Initial state setup for the entire container
-      gsap.set(heroImageRef.current, {
-        y: 40,
-      });
-
-      // Create container for the animation to prevent layout shift
-      const heroImageContent = heroImageRef.current.querySelector("img");
-
-      if (heroImageContent) {
-        // Animate the image content
-        gsap.set(heroImageContent, {
-          opacity: 0,
-          y: 80,
-          filter: "blur(8px)",
-          transformOrigin: "center bottom",
-        });
-
-        gsap.to(heroImageContent, {
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 1.2,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: featuresRef.current,
-            start: "center bottom",
-            end: "bottom center",
-            toggleActions: "play none none none",
-          },
-        });
-      }
     }
   }, []);
 
@@ -217,7 +218,7 @@ export default function HeroSection() {
 
         <div
           ref={featuresRef}
-          className="mt-12 mb-52 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10"
+          className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 mb-40"
         >
           <div ref={addToFeatureRefs} className="flex items-start gap-4">
             <div className="flex-shrink-0">
@@ -285,16 +286,21 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <div
-          ref={heroImageRef}
-          className="-mt-[400px] relative w-full h-[600px] rounded-lg overflow-hidden z-0 transform translate-y-[40%]"
-        >
-          <Image
-            src={heroImage}
-            alt="Dashboard preview"
-            fill
-            className="object-cover"
-          />
+        <div className="relative h-[350px] mt-20">
+          <div
+            ref={heroImageRef}
+            className="absolute -top-[120px] left-0 w-full h-[600px] rounded-lg overflow-hidden shadow-2xl z-20"
+          >
+            <Image
+              src={heroImage}
+              alt="Dashboard preview"
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 75vw"
+              quality={90}
+              className="object-cover"
+            />
+          </div>
         </div>
       </div>
     </section>
