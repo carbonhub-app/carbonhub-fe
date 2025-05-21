@@ -4,6 +4,7 @@ import LandingFooter from "@/components/landing/LandingFooter";
 import HeroSection from "@/components/landing/HeroSection";
 import ProblemSection from "@/components/landing/ProblemSection";
 import SolutionSection from "@/components/landing/SolutionSection";
+import CTASection from "@/components/landing/CTASection";
 
 export default function Home() {
   return (
@@ -18,7 +19,7 @@ export default function Home() {
         {/* <TestimonialsSection /> */}
         {/* <TeamSection /> */}
         {/* <FAQSection /> */}
-        {/* <CTASection /> */}
+        <CTASection />
       </main>
 
       <LandingFooter />
