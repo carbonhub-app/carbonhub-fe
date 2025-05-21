@@ -10,8 +10,9 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "CarbonHub - Carbon Trading Dashboard",
-  description: "Monitor and trade carbon credits with real-time market data",
+  title: "CarbonHub - Make Carbon Count.",
+  description:
+    "Track emissions, earn token rewards, and trade carbon in one seamless platform. Make Carbon Count.",
 };
 
 export default function RootLayout({
