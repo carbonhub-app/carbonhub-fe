@@ -1,14 +1,39 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { TbBuildingFactory } from "react-icons/tb";
+import gsap from "gsap";
 
 export default function LandingHeader() {
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (headerRef.current) {
+      gsap.fromTo(
+        headerRef.current,
+        {
+          y: -100,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+          delay: 0.3,
+        }
+      );
+    }
+  }, []);
+
   return (
-    <header className="fixed inset-x-0 top-6 z-50 flex justify-center pointer-events-none">
+    <header
+      ref={headerRef}
+      className="fixed inset-x-0 top-6 z-50 flex justify-center pointer-events-none"
+    >
       <nav className="pointer-events-auto bg-black/70 backdrop-blur-md shadow-xl rounded-4xl max-w-7xl w-[95vw] mx-auto px-6 py-3 flex items-center justify-between gap-4 border border-white/10">
         {/* Logo */}
         <Link href="/" className="flex-shrink-0">
