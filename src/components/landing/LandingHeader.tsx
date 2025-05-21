@@ -9,7 +9,7 @@ export default function LandingHeader() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   return (
     <header className="fixed inset-x-0 top-6 z-50 flex justify-center pointer-events-none">
-      <nav className="pointer-events-auto bg-black/70 backdrop-blur-md shadow-xl rounded-2xl max-w-7xl w-[95vw] mx-auto px-6 py-3 flex items-center justify-between gap-4 border border-white/10">
+      <nav className="pointer-events-auto bg-black/70 backdrop-blur-md shadow-xl rounded-4xl max-w-7xl w-[95vw] mx-auto px-6 py-3 flex items-center justify-between gap-4 border border-white/10">
         {/* Logo */}
         <Link href="/" className="flex-shrink-0">
           <img src="/logo-full.png" alt="Carbon Hub" className="h-8 sm:h-10" />
@@ -45,7 +45,7 @@ export default function LandingHeader() {
         <div className="hidden md:flex items-center gap-4">
           <Link
             href="/auth/signin"
-            className="text-white/80 font-medium hover:text-primary transition-colors duration-200"
+            className="text-white/80 border-[1px] rounded-lg font-medium hover:text-primary hover:border-primary px-4 py-2 transition-all duration-200"
           >
             Login
           </Link>
