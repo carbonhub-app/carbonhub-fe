@@ -48,13 +48,13 @@ export default function MarqueeSection() {
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
-  const gradientColor = isDark ? "rgb(7, 14, 33)" : "rgb(248, 250, 252)";
+  const gradientColor = isDark ? "rgba(6, 9, 20, 0)" : "rgba(6, 9, 20, 0)";
 
   return (
-    <section className="relative w-full py-12 bg-slate-50 dark:bg-slate-900/50 overflow-hidden">
+    <section className="relative w-full py-12 bg-transparent dark:bg-transparent overflow-hidden">
       {/* Title Container */}
       <div className="container mx-auto px-4 text-center mb-8">
-        <h2 className="text-xl font-normal text-slate-700 dark:text-slate-300">
+        <h2 className="text-xl font-normal text-white dark:text-white">
           Join the companies that track smarter.
         </h2>
       </div>

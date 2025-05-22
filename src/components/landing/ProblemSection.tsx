@@ -10,21 +10,21 @@ export default function ProblemSection() {
 
       <section
         id="problem"
-        className="relative z-10 py-20 bg-slate-50 dark:bg-slate-900/50"
+        className="relative pt-20 pb-24 bg-transparent dark:bg-transparent"
       >
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white dark:text-white">
               The Carbon Management Challenge
             </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400">
+            <p className="text-lg text-slate-300 dark:text-slate-400">
               Companies face significant hurdles in managing their carbon
               footprint while meeting sustainability goals.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-sm">
+            <div className="bg-slate-800/80 dark:bg-slate-800/80 p-6 md:p-8 rounded-lg shadow-xl">
               <div className="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-6">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -40,14 +40,15 @@ export default function ProblemSection() {
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Cost & Complexity</h3>
-              <p className="text-slate-600 dark:text-slate-400">
+              <h3 className="text-xl font-semibold mb-3 text-white dark:text-white">
+                Cost & Complexity
+              </h3>
+              <p className="text-slate-300 dark:text-slate-400 text-sm sm:text-base">
                 Traditional carbon management systems are expensive to implement
                 and complex to maintain, requiring specialized knowledge.
               </p>
             </div>
-
-            <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-sm">
+            <div className="bg-slate-800/80 dark:bg-slate-800/80 p-6 md:p-8 rounded-lg shadow-xl">
               <div className="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-6">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -65,14 +66,15 @@ export default function ProblemSection() {
                   <line x1="12" y1="17" x2="12" y2="21"></line>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Data Transparency</h3>
-              <p className="text-slate-600 dark:text-slate-400">
+              <h3 className="text-xl font-semibold mb-3 text-white dark:text-white">
+                Data Transparency
+              </h3>
+              <p className="text-slate-300 dark:text-slate-400 text-sm sm:text-base">
                 Lack of real-time data and transparency makes it difficult to
                 make informed decisions about carbon credit trading.
               </p>
             </div>
-
-            <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-sm">
+            <div className="bg-slate-800/80 dark:bg-slate-800/80 p-6 md:p-8 rounded-lg shadow-xl">
               <div className="w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-6">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -95,10 +97,10 @@ export default function ProblemSection() {
                   <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3">
+              <h3 className="text-xl font-semibold mb-3 text-white dark:text-white">
                 Market Inefficiency
               </h3>
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-slate-300 dark:text-slate-400 text-sm sm:text-base">
                 Fragmented carbon markets create inefficiencies, leading to
                 higher costs and missed opportunities for businesses.
               </p>
