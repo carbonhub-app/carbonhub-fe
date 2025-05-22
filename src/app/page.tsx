@@ -21,18 +21,18 @@ export default function Home() {
           {/* Background image wrapper */}
           <div className="absolute inset-0 overflow-hidden">
             {/* Actual background div with image */}
-            <div 
-              className="absolute h-[200%] w-full top-[-88%] left-[50px] z-0"
+            <div
+              className="absolute h-[200%] w-full top-[-780px] left-[50px] z-0"
               style={{
                 backgroundImage: 'url("/bg-marquee.webp")',
-                backgroundSize: '100% auto',
-                backgroundPosition: 'center top',
-                backgroundRepeat: 'no-repeat',
+                backgroundSize: "1920px auto",
+                backgroundPosition: "center top",
+                backgroundRepeat: "no-repeat",
                 opacity: 0.8,
               }}
             ></div>
           </div>
-          
+
           {/* Content */}
           <div className="relative z-10">
             <ProblemSection />
