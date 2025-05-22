@@ -22,10 +22,10 @@ export default function Home() {
           <div className="absolute inset-0 overflow-hidden">
             {/* Actual background div with image */}
             <div 
-              className="absolute h-[200%] w-full top-[-113%] left-[50px] z-0"
+              className="absolute h-[200%] w-full top-[-88%] left-[50px] z-0"
               style={{
                 backgroundImage: 'url("/bg-marquee.webp")',
-                backgroundSize: '120% auto',
+                backgroundSize: '100% auto',
                 backgroundPosition: 'center top',
                 backgroundRepeat: 'no-repeat',
                 opacity: 0.8,

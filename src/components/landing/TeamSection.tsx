@@ -18,7 +18,7 @@ const team = [
     github: "https://github.com/jijiau",
   },
   {
-    avatar: "https://i.imgur.com/3VujJJ3.jpg",
+    avatar: "https://i.imgur.com/GiAfcdB.jpg",
     name: "Serenada Cinta",
     title: "UI/UX Designer",
     linkedin: "https://www.linkedin.com/in/serenada-cinta-sunindyo-77aa55283/",
