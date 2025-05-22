@@ -1,0 +1,6 @@
+.faq-answer {
+  opacity: 0;
+  transform: translateY(10px);
+  height: 0;
+  display: none;
+}

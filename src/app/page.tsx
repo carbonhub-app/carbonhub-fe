@@ -15,7 +15,30 @@ export default function Home() {
 
       <main className="flex-grow">
         <HeroSection />
-        <ProblemSection />
+
+        {/* Problem Section with Gradient Background */}
+        <div className="relative bg-[#060914]">
+          {/* Background image wrapper */}
+          <div className="absolute inset-0 overflow-hidden">
+            {/* Actual background div with image */}
+            <div 
+              className="absolute h-[200%] w-full top-[-88%] left-[50px] z-0"
+              style={{
+                backgroundImage: 'url("/bg-marquee.webp")',
+                backgroundSize: '100% auto',
+                backgroundPosition: 'center top',
+                backgroundRepeat: 'no-repeat',
+                opacity: 0.8,
+              }}
+            ></div>
+          </div>
+          
+          {/* Content */}
+          <div className="relative z-10">
+            <ProblemSection />
+          </div>
+        </div>
+
         <SolutionSection />
         {/* Additional sections would be added here */}
         {/* <TestimonialsSection /> */}

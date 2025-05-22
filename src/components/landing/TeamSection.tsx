@@ -1,47 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const titleVariants = {
-  hidden: { opacity: 0, y: -20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: 0.2,
-      duration: 0.6,
-    },
-  },
-};
-
-const paragraphVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: 0.4,
-      duration: 0.6,
-    },
-  },
-};
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const team = [
   {
@@ -52,15 +18,14 @@ const team = [
     github: "https://github.com/jijiau",
   },
   {
-    avatar: "https://i.imgur.com/3VujJJ3.jpg",
+    avatar: "https://i.imgur.com/GiAfcdB.jpg",
     name: "Serenada Cinta",
     title: "UI/UX Designer",
-    linkedin:
-      "https://www.linkedin.com/in/serenada-cinta-sunindyo-77aa55283/",
+    linkedin: "https://www.linkedin.com/in/serenada-cinta-sunindyo-77aa55283/",
     github: "https://github.com/Serenadacinta",
   },
   {
-    avatar: "https://i.imgur.com/3VujJJ3.jpg",
+    avatar: "https://i.imgur.com/3VujJJ3.jpg", // Assuming this is a placeholder and should be different
     name: "Aththariq Lisan",
     title: "Frontend Developer",
     linkedin: "https://www.linkedin.com/in/aththariqlisan/",
@@ -77,48 +42,135 @@ const team = [
     avatar: "https://imgur.com/6RA9RL6.jpg",
     name: "Muhammad Faiz",
     title: "Backend Developer",
-    linkedin: "",
+    linkedin: "", // Empty LinkedIn
     github: "https://github.com/faizathr",
   },
 ];
 
 const Team: React.FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const paragraphRef = useRef<HTMLParagraphElement>(null);
+  const teamListRef = useRef<HTMLUListElement>(null);
+  const teamItemRefs = useRef<(HTMLLIElement | null)[]>([]);
+
+  // Clear refs array on each render
+  teamItemRefs.current = [];
+
+  useEffect(() => {
+    const sectionEl = sectionRef.current;
+    const titleEl = titleRef.current;
+    const paragraphEl = paragraphRef.current;
+    const teamListEl = teamListRef.current;
+    const validTeamItems = teamItemRefs.current.filter(
+      (el) => el !== null
+    ) as HTMLLIElement[];
+
+    if (sectionEl) {
+      gsap.fromTo(
+        sectionEl,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.5,
+          scrollTrigger: {
+            trigger: sectionEl,
+            start: "top 80%",
+            once: true,
+          },
+        }
+      );
+    }
+
+    if (titleEl) {
+      gsap.fromTo(
+        titleEl,
+        { opacity: 0, y: -20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          delay: 0.2, // Stagger after section appears
+          scrollTrigger: {
+            trigger: titleEl,
+            start: "top 85%",
+            once: true,
+          },
+        }
+      );
+    }
+
+    if (paragraphEl) {
+      gsap.fromTo(
+        paragraphEl,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          delay: 0.4, // Stagger after title
+          scrollTrigger: {
+            trigger: paragraphEl,
+            start: "top 85%",
+            once: true,
+          },
+        }
+      );
+    }
+
+    if (teamListEl && validTeamItems.length > 0) {
+      gsap.fromTo(
+        validTeamItems,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.2,
+          delay: 0.6, // Stagger after paragraph
+          scrollTrigger: {
+            trigger: teamListEl,
+            start: "top 80%",
+            once: true,
+          },
+        }
+      );
+    }
+  }, []);
+
   return (
-    <section className="py-14 bg-white">
+    <section ref={sectionRef} className="py-14 bg-white">
       <div className="max-w-screen-xl mx-auto px-4 md:px-8">
         <div className="max-w-xl mx-auto">
-          <motion.h3
+          <h3
+            ref={titleRef}
             className="text-gray-900 text-3xl font-semibold sm:text-4xl text-center"
-            variants={titleVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
           >
             Meet the CarbonHub Team!
-          </motion.h3>
-          <motion.p
+          </h3>
+          <p
+            ref={paragraphRef}
             className="text-gray-600 mt-3 text-center max-w-md mx-auto"
-            variants={paragraphVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
           >
-            Driven by passion and innovation, we create cutting-edge, transparent, and user-friendly carbon trading solutions that empower a sustainable future.
-          </motion.p>
+            Driven by passion and innovation, we create cutting-edge,
+            transparent, and user-friendly carbon trading solutions that empower
+            a sustainable future.
+          </p>
         </div>
 
-        <motion.ul
+        <ul
+          ref={teamListRef}
           className="mt-12 flex flex-wrap justify-center gap-12"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
         >
           {team.map((member, idx) => (
-            <motion.li
+            <li
               key={idx}
+              ref={(el) => {
+                if (el && !teamItemRefs.current.includes(el)) {
+                  teamItemRefs.current[idx] = el;
+                }
+              }}
               className="flex flex-col items-center w-48"
-              variants={itemVariants}
             >
               <div className="relative w-24 h-24 mb-4 rounded-full overflow-hidden shadow-lg border-2 border-indigo-600">
                 <Image
@@ -126,12 +178,14 @@ const Team: React.FC = () => {
                   alt={member.name}
                   layout="fill"
                   objectFit="cover"
-                  priority={idx < 3}
+                  priority={idx < 3} // Keep priority for above-the-fold images if applicable
                   sizes="96px"
                 />
               </div>
               <div className="text-center">
-                <h4 className="text-gray-800 font-semibold text-lg">{member.name}</h4>
+                <h4 className="text-gray-800 font-semibold text-lg">
+                  {member.name}
+                </h4>
                 <p className="text-indigo-600">{member.title}</p>
                 <div className="mt-3 flex justify-center gap-5 text-gray-400">
                   {member.github && (
@@ -162,7 +216,8 @@ const Team: React.FC = () => {
                     >
                       <svg
                         className="w-6 h-6"
-                        fill="none"
+                        fill="none" // Changed to none as the path has fill="currentColor"
+                        stroke="currentColor" // Added stroke for consistency if needed, or ensure path has fill
                         viewBox="0 0 48 48"
                         xmlns="http://www.w3.org/2000/svg"
                       >
@@ -182,9 +237,9 @@ const Team: React.FC = () => {
                   )}
                 </div>
               </div>
-            </motion.li>
+            </li>
           ))}
-        </motion.ul>
+        </ul>
       </div>
     </section>
   );
