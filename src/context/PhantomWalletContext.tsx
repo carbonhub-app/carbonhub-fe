@@ -4,8 +4,16 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Types
+interface PhantomWallet {
+  solana: {
+    connect: () => Promise<string>;
+    isConnected: boolean;
+    signMessage: (message: Uint8Array) => Promise<void>;
+  };
+}
+
 interface PhantomWalletState {
-  phantom: any | null;
+  phantom: PhantomWallet | null;
   isConnected: boolean;
   publicKey: string | null;
   connecting: boolean;
@@ -62,9 +70,13 @@ export function PhantomWalletProvider({
         const userData: UserData = JSON.parse(savedUserData);
 
         // Try to reconnect to phantom
-        if (typeof window !== "undefined" && (window as any).phantom?.solana) {
-          const phantom = (window as any).phantom;
-          if (phantom.solana.isConnected) {
+        if (
+          typeof window !== "undefined" &&
+          (window as { phantom?: { solana: { isConnected: boolean } } }).phantom
+            ?.solana
+        ) {
+          const phantom = (window as { phantom?: PhantomWallet }).phantom;
+          if (phantom && phantom.solana.isConnected) {
             setState((prev) => ({
               ...prev,
               phantom: phantom,
@@ -140,12 +152,16 @@ export function PhantomWalletProvider({
 
       // Redirect to dashboard
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Wallet connection failed:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to connect wallet. Please try again.";
       setState((prev) => ({
         ...prev,
         connecting: false,
-        error: error.message || "Failed to connect wallet. Please try again.",
+        error: errorMessage,
       }));
     }
   };

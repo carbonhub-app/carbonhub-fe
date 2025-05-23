@@ -8,12 +8,20 @@ export interface UserData {
 }
 
 export interface PhantomWalletState {
-  phantom: any | null;
+  phantom: PhantomWallet | null;
   isConnected: boolean;
   publicKey: string | null;
   connecting: boolean;
   error: string | null;
   userData: UserData | null;
+}
+
+export interface PhantomWallet {
+  solana: {
+    connect: () => Promise<string>;
+    isConnected: boolean;
+    signMessage: (message: Uint8Array) => Promise<void>;
+  };
 }
 
 export interface WalletConnection {

@@ -14,8 +14,8 @@ const TradingViewWidget = dynamic(
 
 export default function CarbonTradingPage() {
   // Placeholder, ganti dengan data asli jika sudah ada
-  const [balance, setBalance] = useState<number | null>(null);
-  const [available, setAvailable] = useState<number | null>(null);
+  const balance = null;
+  const available = null;
 
   const [orderSize, setOrderSize] = useState<number>(1);
   const [side, setSide] = useState<"buy" | "sell">("buy");
@@ -27,7 +27,9 @@ export default function CarbonTradingPage() {
       return;
     }
     alert(
-      `Order placed: ${side.toUpperCase()} ${orderSize} credits${price ? ` (Price: $${price})` : ""}`
+      `Order placed: ${side.toUpperCase()} ${orderSize} credits${
+        price ? ` (Price: $${price})` : ""
+      }`
     );
     // Implement API call or further logic here
   };
@@ -36,18 +38,28 @@ export default function CarbonTradingPage() {
     <div className="min-h-screen bg-slate-900 text-white p-0 font-sans">
       {/* Header */}
       <header className="flex justify-between items-center px-8 py-6 border-b border-slate-800 bg-slate-900">
-        <h1 className="text-3xl font-bold tracking-tight text-indigo-400 drop-shadow">CarbonHub Trading</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-indigo-400 drop-shadow">
+          CarbonHub Trading
+        </h1>
         <div className="flex items-center gap-8">
           <div>
             <span className="text-xs text-slate-400">Balance</span>
             <div className="font-semibold text-lg text-white">
-              {balance !== null ? `$${balance.toLocaleString()}` : <span className="text-slate-600">-</span>}
+              {balance !== null ? (
+                `$${balance.toLocaleString()}`
+              ) : (
+                <span className="text-slate-600">-</span>
+              )}
             </div>
           </div>
           <div>
             <span className="text-xs text-slate-400">Available</span>
             <div className="font-semibold text-lg text-green-400">
-              {available !== null ? `$${available.toLocaleString()}` : <span className="text-slate-600">-</span>}
+              {available !== null ? (
+                `$${available.toLocaleString()}`
+              ) : (
+                <span className="text-slate-600">-</span>
+              )}
             </div>
           </div>
         </div>
@@ -57,7 +69,9 @@ export default function CarbonTradingPage() {
         {/* Left: Order Entry Panel */}
         <section className="w-[350px] bg-slate-800 rounded-2xl p-8 shadow-2xl flex flex-col gap-8 border border-slate-700">
           <div>
-            <h2 className="text-xl font-bold mb-2 text-indigo-300">Place Order</h2>
+            <h2 className="text-xl font-bold mb-2 text-indigo-300">
+              Place Order
+            </h2>
             <div className="flex gap-2 mb-4">
               <button
                 className={`flex-1 py-2 rounded-lg font-semibold transition ${
@@ -82,7 +96,8 @@ export default function CarbonTradingPage() {
             </div>
             <div className="mb-4">
               <label className="block mb-1 font-semibold" htmlFor="price">
-                Limit Price ($) <span className="text-xs text-slate-400">(Opsional)</span>
+                Limit Price ($){" "}
+                <span className="text-xs text-slate-400">(Opsional)</span>
               </label>
               <input
                 id="price"
@@ -138,15 +153,21 @@ export default function CarbonTradingPage() {
               <ul className="mt-1 space-y-1">
                 {price && (
                   <li>
-                    <span className="text-slate-300">Limit Price:</span> ${price}
+                    <span className="text-slate-300">Limit Price:</span> $
+                    {price}
                   </li>
                 )}
                 <li>
-                  <span className="text-slate-300">Order Size:</span> {orderSize || "-"} credits
+                  <span className="text-slate-300">Order Size:</span>{" "}
+                  {orderSize || "-"} credits
                 </li>
                 <li>
                   <span className="text-slate-300">Side:</span>{" "}
-                  <span className={side === "buy" ? "text-green-400" : "text-red-400"}>
+                  <span
+                    className={
+                      side === "buy" ? "text-green-400" : "text-red-400"
+                    }
+                  >
                     {side.toUpperCase()}
                   </span>
                 </li>

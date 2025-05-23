@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -20,38 +20,41 @@ const FaQ = () => {
   answerRefs.current = [];
   iconRefs.current = [];
 
-  const faqItems = [
-    {
-      question: "How do I start trading carbon credits?",
-      answer:
-        "Simply create an account, verify your company details, and explore available carbon credit options on our transparent marketplace. Start trading instantly with confidence.",
-    },
-    {
-      question: "What information is required to list my company?",
-      answer:
-        "You’ll need to provide valid company registration documents, verified emissions data, and compliance certificates to ensure transparency and trustworthiness.",
-    },
-    {
-      question: "Can I track my carbon footprint progress?",
-      answer:
-        "Absolutely! Our platform offers real-time tracking dashboards so you can monitor emissions, trading activities, and rewards all in one place.",
-    },
-    {
-      question: "Are there any fees for trading?",
-      answer:
-        "We offer a competitive fee structure with no hidden charges. Transaction fees vary based on trade volume and type; detailed info is available in your account dashboard.",
-    },
-    {
-      question: "Is the platform secure and compliant?",
-      answer:
-        "Yes, CarbonHub uses blockchain technology to ensure transparent, tamper-proof transactions. We adhere to international standards for carbon trading compliance.",
-    },
-    {
-      question: "How can I get support if I have questions?",
-      answer:
-        "Our dedicated support team is available via chat, email, and phone. Visit our Contact page to reach out anytime — we’re here to help you succeed.",
-    },
-  ];
+  const faqItems = useMemo(
+    () => [
+      {
+        question: "How do I start trading carbon credits?",
+        answer:
+          "Simply create an account, verify your company details, and explore available carbon credit options on our transparent marketplace. Start trading instantly with confidence.",
+      },
+      {
+        question: "What information is required to list my company?",
+        answer:
+          "You'll need to provide valid company registration documents, verified emissions data, and compliance certificates to ensure transparency and trustworthiness.",
+      },
+      {
+        question: "Can I track my carbon footprint progress?",
+        answer:
+          "Absolutely! Our platform offers real-time tracking dashboards so you can monitor emissions, trading activities, and rewards all in one place.",
+      },
+      {
+        question: "Are there any fees for trading?",
+        answer:
+          "We offer a competitive fee structure with no hidden charges. Transaction fees vary based on trade volume and type; detailed info is available in your account dashboard.",
+      },
+      {
+        question: "Is the platform secure and compliant?",
+        answer:
+          "Yes, CarbonHub uses blockchain technology to ensure transparent, tamper-proof transactions. We adhere to international standards for carbon trading compliance.",
+      },
+      {
+        question: "How can I get support if I have questions?",
+        answer:
+          "Our dedicated support team is available via chat, email, and phone. Visit our Contact page to reach out anytime — we're here to help you succeed.",
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     // Section fade in

@@ -3,9 +3,10 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { TbBuildingFactory, TbWallet } from "react-icons/tb";
+import { TbBuildingFactory } from "react-icons/tb";
 import { usePhantomWallet } from "@/context/PhantomWalletContext";
 import gsap from "gsap";
+import Image from "next/image";
 
 export default function LandingHeader() {
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -58,7 +59,13 @@ export default function LandingHeader() {
       <nav className="pointer-events-auto bg-black/70 backdrop-blur-md shadow-xl rounded-4xl max-w-7xl w-[95vw] mx-auto px-6 py-3 flex items-center justify-between gap-4 border border-white/10">
         {/* Logo */}
         <Link href="/" className="flex-shrink-0">
-          <img src="/logo-full.png" alt="Carbon Hub" className="h-8 sm:h-10" />
+          <Image
+            src="/logo-full.png"
+            alt="Carbon Hub"
+            width={120}
+            height={40}
+            className="h-8 sm:h-10 w-auto"
+          />
         </Link>
 
         {/* Desktop Nav */}

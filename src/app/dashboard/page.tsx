@@ -148,8 +148,8 @@ export default function DashboardPage() {
                 🎉 Wallet Connected!
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">
-                Your Phantom wallet is now connected to CarbonHub. You're ready
-                to start tracking and trading carbon credits.
+                Your Phantom wallet is now connected to CarbonHub. You&apos;re
+                ready to start tracking and trading carbon credits.
               </p>
               <div className="text-xs text-slate-500 font-mono">
                 {publicKey ? truncateAddress(publicKey) : "N/A"}
