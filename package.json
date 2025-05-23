@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@phantom/wallet-sdk": "^0.1.2",
     "@radix-ui/react-slot": "^1.2.2",
     "@types/react-icons": "^2.2.7",
     "class-variance-authority": "^0.7.0",

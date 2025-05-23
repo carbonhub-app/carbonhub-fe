@@ -98,35 +98,33 @@ export default function HeroSection() {
     const heroImageElement = heroImageRef.current;
     const heroImageContent = heroImageElement?.querySelector("img");
 
-    // Set initial state for hero image ONCE
+    // Set initial state for hero image with less extreme values
     if (heroImageContent) {
       gsap.set(heroImageContent, {
-        scale: 0.9,
+        scale: 0.95,
         transformOrigin: "center bottom",
-        filter: "blur(8px)",
-        opacity: 0,
-        y: 60,
+        filter: "blur(4px)",
+        opacity: 0.3,
+        y: 30,
       });
     }
 
-    // Hero image animation defined as a function to be called after features appear
+    // Hero image animation with independent timing and fallback
     const animateHeroImage = () => {
-      // heroImageContent is already defined in the useEffect scope
       if (heroImageContent) {
-        // Animate in immediately after features with scaling and blur effect
         gsap.to(heroImageContent, {
           opacity: 1,
           y: 0,
           scale: 1,
           filter: "blur(0px)",
           duration: 1.0,
-          delay: 0.1, // Jeda sangat pendek
+          delay: 0.1,
           ease: "power3.out",
         });
       }
     };
 
-    // Features animation
+    // Features animation with independent hero image trigger
     if (featureItemsRef.current.length) {
       gsap.fromTo(
         featureItemsRef.current,
@@ -134,17 +132,36 @@ export default function HeroSection() {
         {
           opacity: 1,
           y: 0,
-          duration: 0.5, // Dipercepat lagi
-          delay: 0.8, // Dipercepat lagi
-          stagger: 0.12, // Stagger dipercepat untuk mengurangi jeda antar item
+          duration: 0.5,
+          delay: 0.8,
+          stagger: 0.12,
           ease: "power2.out",
-          onComplete: () => {
-            // Trigger hero image animation immediately after features are fully visible
-            animateHeroImage();
-          },
         }
       );
     }
+
+    // Independent hero image animation with fallback timer
+    const heroImageTimer = setTimeout(() => {
+      animateHeroImage();
+    }, 1200);
+
+    // Fallback timer to ensure hero image shows even if animations fail
+    const fallbackTimer = setTimeout(() => {
+      if (heroImageContent) {
+        gsap.set(heroImageContent, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: "blur(0px)",
+        });
+      }
+    }, 3000);
+
+    // Cleanup timers
+    return () => {
+      clearTimeout(heroImageTimer);
+      clearTimeout(fallbackTimer);
+    };
   }, []);
 
   return (
@@ -159,6 +176,9 @@ export default function HeroSection() {
         priority
         quality={100}
         className="object-cover -z-10"
+        onError={() => {
+          console.warn("Hero background image failed to load");
+        }}
       />
       <div className="relative z-0 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -299,6 +319,9 @@ export default function HeroSection() {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 75vw"
               quality={90}
               className="object-cover"
+              onError={() => {
+                console.warn("Hero image failed to load");
+              }}
             />
           </div>
         </div>

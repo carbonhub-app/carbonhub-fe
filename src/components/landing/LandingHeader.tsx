@@ -3,12 +3,21 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { TbBuildingFactory } from "react-icons/tb";
+import { TbBuildingFactory, TbWallet } from "react-icons/tb";
+import { usePhantomWallet } from "@/context/PhantomWalletContext";
 import gsap from "gsap";
 
 export default function LandingHeader() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const headerRef = useRef<HTMLElement>(null);
+  const {
+    isConnected,
+    connecting,
+    connectWallet,
+    disconnectWallet,
+    publicKey,
+    error,
+  } = usePhantomWallet();
 
   useEffect(() => {
     if (headerRef.current) {
@@ -29,6 +38,18 @@ export default function LandingHeader() {
     }
   }, []);
 
+  const handleWalletConnect = async () => {
+    try {
+      await connectWallet();
+    } catch (error) {
+      console.error("Failed to connect wallet:", error);
+    }
+  };
+
+  const truncateAddress = (address: string) => {
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  };
+
   return (
     <header
       ref={headerRef}
@@ -39,6 +60,7 @@ export default function LandingHeader() {
         <Link href="/" className="flex-shrink-0">
           <img src="/logo-full.png" alt="Carbon Hub" className="h-8 sm:h-10" />
         </Link>
+
         {/* Desktop Nav */}
         <ul className="hidden md:flex flex-1 justify-center items-center gap-8">
           <li>
@@ -66,23 +88,70 @@ export default function LandingHeader() {
             </Link>
           </li>
         </ul>
-        {/* CTA */}
+
+        {/* CTA - Wallet Connection */}
         <div className="hidden md:flex items-center gap-4">
-          <Link
-            href="/auth/signin"
-            className="text-white/80 border-[1px] rounded-lg font-medium hover:text-primary hover:border-primary px-4 py-2 transition-all duration-200"
-          >
-            Login
-          </Link>
-          <Link href="/auth/signup">
-            <Button
-              size="sm"
-              className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
-            >
-              Start Tracking <TbBuildingFactory className="ml-1 text-lg" />
-            </Button>
-          </Link>
+          {!isConnected ? (
+            <>
+              <Button
+                onClick={handleWalletConnect}
+                disabled={connecting}
+                variant="outline"
+                className="text-white/80 border-white/20 hover:border-primary hover:text-primary bg-transparent"
+              >
+                {connecting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Connecting...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">Login</div>
+                )}
+              </Button>
+              <Button
+                onClick={handleWalletConnect}
+                disabled={connecting}
+                size="sm"
+                className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+              >
+                {connecting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Connecting...
+                  </div>
+                ) : (
+                  <>
+                    Start Tracking{" "}
+                    <TbBuildingFactory className="ml-1 text-lg" />
+                  </>
+                )}
+              </Button>
+            </>
+          ) : (
+            <div className="flex items-center gap-4">
+              <div className="text-white/80 text-sm">
+                {truncateAddress(publicKey || "")}
+              </div>
+              <Link href="/dashboard">
+                <Button
+                  size="sm"
+                  className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+                >
+                  Dashboard <TbBuildingFactory className="ml-1 text-lg" />
+                </Button>
+              </Link>
+              <Button
+                onClick={disconnectWallet}
+                variant="outline"
+                size="sm"
+                className="text-white/80 border-white/20 hover:border-red-400 hover:text-red-400 bg-transparent"
+              >
+                Disconnect
+              </Button>
+            </div>
+          )}
         </div>
+
         {/* Hamburger */}
         <button
           className="md:hidden flex items-center justify-center text-white hover:text-primary transition-colors duration-200 focus:outline-none"
@@ -103,6 +172,7 @@ export default function LandingHeader() {
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </button>
+
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="absolute top-16 left-0 w-full flex justify-center md:hidden z-50">
@@ -128,26 +198,63 @@ export default function LandingHeader() {
               >
                 Why Carbon Hub
               </Link>
-              <Link
-                href="/auth/signin"
-                className="text-white/80 font-medium hover:text-primary transition-colors duration-200"
-                onClick={() => setMenuOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="w-full"
-                onClick={() => setMenuOpen(false)}
-              >
+
+              {!isConnected ? (
                 <Button
-                  size="sm"
-                  className="bg-primary text-white font-semibold flex items-center gap-2 w-full justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+                  onClick={() => {
+                    handleWalletConnect();
+                    setMenuOpen(false);
+                  }}
+                  disabled={connecting}
+                  className="w-full bg-primary text-white font-semibold flex items-center gap-2 justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
                 >
-                  Start Tracking <TbBuildingFactory className="ml-1 text-lg" />
+                  {connecting ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Connecting...
+                    </div>
+                  ) : (
+                    <>Login</>
+                  )}
                 </Button>
-              </Link>
+              ) : (
+                <div className="w-full flex flex-col gap-2">
+                  <div className="text-white/80 text-sm text-center">
+                    {truncateAddress(publicKey || "")}
+                  </div>
+                  <Link
+                    href="/dashboard"
+                    className="w-full"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <Button
+                      size="sm"
+                      className="bg-primary text-white font-semibold flex items-center gap-2 w-full justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+                    >
+                      Dashboard <TbBuildingFactory className="ml-1 text-lg" />
+                    </Button>
+                  </Link>
+                  <Button
+                    onClick={() => {
+                      disconnectWallet();
+                      setMenuOpen(false);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="text-white/80 border-white/20 hover:border-red-400 hover:text-red-400 bg-transparent w-full"
+                  >
+                    Disconnect
+                  </Button>
+                </div>
+              )}
             </div>
+          </div>
+        )}
+
+        {/* Error Display */}
+        {error && (
+          <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-red-500/90 text-white px-4 py-2 rounded-lg text-sm max-w-xs text-center">
+            {error}
           </div>
         )}
       </nav>
