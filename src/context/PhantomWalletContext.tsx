@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation";
 
 // Types
 interface PhantomWallet {
-  solana: {
-    connect: () => Promise<string>;
+  solana?: {
+    connect: () => Promise<any>;
     isConnected: boolean;
     signMessage: (message: Uint8Array) => Promise<void>;
   };
 }
 
 interface PhantomWalletState {
-  phantom: PhantomWallet | null;
+  phantom: any;
   isConnected: boolean;
   publicKey: string | null;
   connecting: boolean;
@@ -70,13 +70,9 @@ export function PhantomWalletProvider({
         const userData: UserData = JSON.parse(savedUserData);
 
         // Try to reconnect to phantom
-        if (
-          typeof window !== "undefined" &&
-          (window as { phantom?: { solana: { isConnected: boolean } } }).phantom
-            ?.solana
-        ) {
-          const phantom = (window as { phantom?: PhantomWallet }).phantom;
-          if (phantom && phantom.solana.isConnected) {
+        if (typeof window !== "undefined" && (window as any).phantom?.solana) {
+          const phantom = (window as any).phantom;
+          if (phantom && phantom.solana?.isConnected) {
             setState((prev) => ({
               ...prev,
               phantom: phantom,
@@ -142,7 +138,7 @@ export function PhantomWalletProvider({
       // Update state
       setState((prev) => ({
         ...prev,
-        phantom,
+        phantom: phantom,
         isConnected: true,
         publicKey: publicKey.toString(),
         userData,

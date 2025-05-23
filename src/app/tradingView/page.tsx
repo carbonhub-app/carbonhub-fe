@@ -14,8 +14,8 @@ const TradingViewWidget = dynamic(
 
 export default function CarbonTradingPage() {
   // Placeholder, ganti dengan data asli jika sudah ada
-  const balance = null;
-  const available = null;
+  const [balance] = useState<number | null>(null);
+  const [available] = useState<number | null>(null);
 
   const [orderSize, setOrderSize] = useState<number>(1);
   const [side, setSide] = useState<"buy" | "sell">("buy");
@@ -34,6 +34,11 @@ export default function CarbonTradingPage() {
     // Implement API call or further logic here
   };
 
+  const formatBalance = (value: number | null): string => {
+    if (value === null) return "-";
+    return `$${value.toLocaleString()}`;
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 text-white p-0 font-sans">
       {/* Header */}
@@ -46,7 +51,7 @@ export default function CarbonTradingPage() {
             <span className="text-xs text-slate-400">Balance</span>
             <div className="font-semibold text-lg text-white">
               {balance !== null ? (
-                `$${balance.toLocaleString()}`
+                formatBalance(balance)
               ) : (
                 <span className="text-slate-600">-</span>
               )}
@@ -56,7 +61,7 @@ export default function CarbonTradingPage() {
             <span className="text-xs text-slate-400">Available</span>
             <div className="font-semibold text-lg text-green-400">
               {available !== null ? (
-                `$${available.toLocaleString()}`
+                formatBalance(available)
               ) : (
                 <span className="text-slate-600">-</span>
               )}
@@ -123,13 +128,18 @@ export default function CarbonTradingPage() {
                 onChange={(e) => setOrderSize(Number(e.target.value))}
                 placeholder="Enter amount"
               />
+              <label htmlFor="orderSizeRange" className="sr-only">
+                Order Size Range Slider
+              </label>
               <input
+                id="orderSizeRange"
                 type="range"
                 min="1"
                 max={available || 1000}
                 value={orderSize}
                 onChange={(e) => setOrderSize(Number(e.target.value))}
                 className="w-full accent-indigo-500"
+                aria-label="Order size range slider"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-1">
                 <span>1</span>
