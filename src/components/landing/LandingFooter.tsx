@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function LandingFooter() {
   return (
@@ -9,8 +10,13 @@ export default function LandingFooter() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <Link href="/" className="font-bold text-xl mb-4 block">
-              CarbonHub
+            <Link href="/" className="mb-4 block">
+              <Image
+                src="/logo-full.png"
+                alt="CarbonHub Logo"
+                width={150}
+                height={40}
+              />
             </Link>
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Empowering companies to manage and trade carbon credits

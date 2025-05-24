@@ -70,7 +70,7 @@ export default function ProblemSection() {
               trigger: item,
               start: "top 85%",
               end: "bottom 15%",
-              toggleActions: "play reverse play none", // Show on enter, hide only when leaving bottom, stay visible when leaving top
+              toggleActions: "play reverse play reverse", // Show on enter, hide only when leaving bottom, stay visible when leaving top
               scrub: false, // Discrete animation, not scrubbed
             },
           }
