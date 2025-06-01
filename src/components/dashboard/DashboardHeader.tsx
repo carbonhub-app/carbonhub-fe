@@ -4,6 +4,12 @@ import React from "react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 
+import dynamic from 'next/dynamic';
+const WalletMultiButton = dynamic(
+  () => import('@solana/wallet-adapter-react-ui').then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
+
 export default function DashboardHeader() {
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
@@ -40,6 +46,7 @@ export default function DashboardHeader() {
 
             <ThemeToggle />
 
+            {/*
             <div className="relative">
               <button className="flex items-center space-x-1">
                 <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-sm font-medium">
@@ -60,6 +67,8 @@ export default function DashboardHeader() {
                 </svg>
               </button>
             </div>
+             */}
+            <WalletMultiButton className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"/>
           </div>
         </div>
       </div>

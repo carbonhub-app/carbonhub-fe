@@ -39,3 +39,31 @@ export interface CarbonCreditTransaction {
   transactionHash?: string;
   status: "pending" | "confirmed" | "failed";
 }
+
+// ===========================================
+
+export type accountTypes = "user" | "company";
+
+export interface ChallengeResponses {
+  status: string;
+  message: string;
+  data: {
+    challenge: string;
+  };
+}
+
+export interface VerifyResponses {
+  status: string;
+  message: string;
+  data: {
+    publicKey: string;
+    token: string;
+    type: string;
+  }
+}
+
+export interface userDatas {
+  carbonCredits: number;
+  connectedAt: Date;
+  totalTransactions: number;
+}

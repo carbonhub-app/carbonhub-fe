@@ -1,24 +1,47 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { TbBuildingFactory } from "react-icons/tb";
-import { usePhantomWallet } from "@/context/PhantomWalletContext";
 import gsap from "gsap";
 import Image from "next/image";
+
+import { useWallet } from '@solana/wallet-adapter-react';
+import dynamic from 'next/dynamic';
+const WalletMultiButton = dynamic(
+  () => import('@solana/wallet-adapter-react-ui').then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
+// import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useRouter } from "next/navigation";
+import { accountTypes, ChallengeResponses, VerifyResponses } from "@/types/wallet";
 
 export default function LandingHeader() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const headerRef = useRef<HTMLElement>(null);
-  const {
-    isConnected,
-    connecting,
-    connectWallet,
-    disconnectWallet,
-    publicKey,
-    error,
-  } = usePhantomWallet();
+  const { publicKey, signMessage, connected, connecting, wallet } = useWallet();
+  const [error, setError] = useState<Error | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!wallet) return;
+    const handleError = (err: unknown) => {
+      const error = err instanceof Error ? err : new Error('Unknown wallet error');
+      setError(error);
+    };
+    wallet.adapter.on('error', handleError);
+    return () => {
+      wallet.adapter.off('error', handleError);
+    };
+  }, [wallet]);
+
+  useEffect(() => {
+    if (connected) {
+      setError(null);
+      router.push("/dashboard");
+    }
+  }, [connected]);
 
   useEffect(() => {
     if (headerRef.current) {
@@ -39,16 +62,64 @@ export default function LandingHeader() {
     }
   }, []);
 
-  const handleWalletConnect = async () => {
+  const truncateAddress = (address: string) => {
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  };
+
+  const handleLogin = async (accountType: accountTypes) => {
+    if (!publicKey || !signMessage) {
+      alert('Please connect your wallet first.');
+      return;
+    }
+
     try {
-      await connectWallet();
+      const challengeResponse = await fetch('https://api.carbonhub.app/auth/request-challenge',  {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          publicKey: publicKey.toBase58(),
+          type: accountType,
+        }),
+      });
+
+      const challengeData: ChallengeResponses = await challengeResponse.json();
+      if (challengeData.status === 'error') {
+        throw new Error(challengeData.data?.challenge || 'Failed to fetch challenge');
+      }
+
+      const challengeMessage = challengeData.data.challenge;
+
+      const encodedMessage = new TextEncoder().encode(challengeMessage);
+      const signature = await signMessage(encodedMessage);
+
+      const verifyResponse = await fetch('https://api.carbonhub.app/auth/verify-signature',  {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          publicKey: publicKey.toBase58(),
+          challenge: challengeMessage,
+          signature: Buffer.from(signature).toString('base64'),
+        }),
+      });
+
+      const verifyResult: VerifyResponses = await verifyResponse.json();
+      if (verifyResult.status === 'success') {
+        alert(`Signed successfully! Public Key: ${publicKey.toBase58()}`);
+      } else {
+        alert('Signature verification failed.');
+      }
     } catch (error) {
-      console.error("Failed to connect wallet:", error);
+      console.error('Error during sign-in:', error);
+      alert('Signing failed.');
     }
   };
 
-  const truncateAddress = (address: string) => {
-    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  const handleUserLogin = () => {
+    handleLogin("user");
+  };
+
+  const handleCompanyLogin = () => {
+    handleLogin("company");
   };
 
   return (
@@ -98,65 +169,40 @@ export default function LandingHeader() {
 
         {/* CTA - Wallet Connection */}
         <div className="hidden md:flex items-center gap-4">
-          {!isConnected ? (
-            <>
-              <Button
-                onClick={handleWalletConnect}
-                disabled={connecting}
-                variant="outline"
-                className="text-white/80 border-white/20 hover:border-primary hover:text-primary bg-transparent"
-              >
-                {connecting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Connecting...
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">Login</div>
-                )}
-              </Button>
-              <Button
-                onClick={handleWalletConnect}
-                disabled={connecting}
-                size="sm"
-                className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
-              >
-                {connecting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Connecting...
-                  </div>
-                ) : (
-                  <>
-                    Start Tracking{" "}
-                    <TbBuildingFactory className="ml-1 text-lg" />
-                  </>
-                )}
-              </Button>
-            </>
-          ) : (
-            <div className="flex items-center gap-4">
-              <div className="text-white/80 text-sm">
-                {truncateAddress(publicKey || "")}
+          <Button
+            onClick={handleUserLogin}
+            disabled={connecting}
+            variant="outline"
+            className="text-white/80 border-white/20 hover:border-primary hover:text-primary bg-transparent"
+          >
+            {connecting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Connecting...
               </div>
-              <Link href="/dashboard">
-                <Button
-                  size="sm"
-                  className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
-                >
-                  Dashboard <TbBuildingFactory className="ml-1 text-lg" />
-                </Button>
-              </Link>
-              <Button
-                onClick={disconnectWallet}
-                variant="outline"
-                size="sm"
-                className="text-white/80 border-white/20 hover:border-red-400 hover:text-red-400 bg-transparent"
-              >
-                Disconnect
-              </Button>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center gap-2">User Login</div>
+            )}
+          </Button>
+          <Button
+            onClick={handleCompanyLogin}
+            disabled={connecting}
+            size="sm"
+            className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+          >
+            {connecting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Connecting...
+              </div>
+            ) : (
+              <>
+                Company Login{" "}
+                <TbBuildingFactory className="ml-1 text-lg" />
+              </>
+            )}
+          </Button>
+          <WalletMultiButton />
         </div>
 
         {/* Hamburger */}
@@ -205,29 +251,47 @@ export default function LandingHeader() {
               >
                 Why Carbon Hub
               </Link>
-
-              {!isConnected ? (
-                <Button
-                  onClick={() => {
-                    handleWalletConnect();
-                    setMenuOpen(false);
-                  }}
-                  disabled={connecting}
-                  className="w-full bg-primary text-white font-semibold flex items-center gap-2 justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
-                >
-                  {connecting ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Connecting...
-                    </div>
-                  ) : (
-                    <>Login</>
-                  )}
-                </Button>
+              {!connected ? (
+                <>
+                  <Button
+                    onClick={() => {
+                      handleUserLogin();
+                      setMenuOpen(false);
+                    }}
+                    disabled={connecting}
+                    className="w-full bg-primary text-white font-semibold flex items-center gap-2 justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+                  >
+                    {connecting ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Connecting...
+                      </div>
+                    ) : (
+                      <>User Login</>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleCompanyLogin();
+                      setMenuOpen(false);
+                    }}
+                    disabled={connecting}
+                    className="w-full bg-primary text-white font-semibold flex items-center gap-2 justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+                  >
+                    {connecting ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Connecting...
+                      </div>
+                    ) : (
+                      <>Company Login</>
+                    )}
+                  </Button>
+                </>
               ) : (
                 <div className="w-full flex flex-col gap-2">
                   <div className="text-white/80 text-sm text-center">
-                    {truncateAddress(publicKey || "")}
+                    {truncateAddress(publicKey?.toBase58() || "")}
                   </div>
                   <Link
                     href="/dashboard"
@@ -241,19 +305,9 @@ export default function LandingHeader() {
                       Dashboard <TbBuildingFactory className="ml-1 text-lg" />
                     </Button>
                   </Link>
-                  <Button
-                    onClick={() => {
-                      disconnectWallet();
-                      setMenuOpen(false);
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="text-white/80 border-white/20 hover:border-red-400 hover:text-red-400 bg-transparent w-full"
-                  >
-                    Disconnect
-                  </Button>
                 </div>
               )}
+              <WalletMultiButton />
             </div>
           </div>
         )}
@@ -261,7 +315,7 @@ export default function LandingHeader() {
         {/* Error Display */}
         {error && (
           <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-red-500/90 text-white px-4 py-2 rounded-lg text-sm max-w-xs text-center">
-            {error}
+            {error.message}
           </div>
         )}
       </nav>

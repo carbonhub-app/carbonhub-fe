@@ -1,11 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { usePhantomWallet } from "@/context/PhantomWalletContext";
+import { useWallet } from "@solana/wallet-adapter-react";
+
+import { userDatas } from "@/types/wallet";
 
 export default function DashboardPage() {
-  const { userData, publicKey } = usePhantomWallet();
+  const [userData, setUserData] = useState<userDatas | null>(null);
+  const { publicKey } = useWallet();
 
   // Helper function to truncate wallet address
   const truncateAddress = (address: string) => {
@@ -19,7 +22,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>Connected Wallet:</span>
           <span className="font-mono bg-muted px-2 py-1 rounded">
-            {publicKey ? truncateAddress(publicKey) : "Not connected"}
+            {publicKey ? truncateAddress(publicKey.toBase58()) : "Not connected"}
           </span>
           <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
             Solana
@@ -152,7 +155,7 @@ export default function DashboardPage() {
                 ready to start tracking and trading carbon credits.
               </p>
               <div className="text-xs text-slate-500 font-mono">
-                {publicKey ? truncateAddress(publicKey) : "N/A"}
+                {publicKey ? truncateAddress(publicKey.toBase58()) : "N/A"}
               </div>
             </div>
 

@@ -2,22 +2,22 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { usePhantomWallet } from "@/context/PhantomWalletContext";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
 export default function AuthGuard({ children }: AuthGuardProps) {
-  const { isConnected, connecting } = usePhantomWallet();
+  const { connected, connecting } = useWallet();
   const router = useRouter();
 
   useEffect(() => {
     // If not connecting and not connected, redirect to home
-    if (!connecting && !isConnected) {
+    if (!connecting && !connected) {
       router.push("/");
     }
-  }, [isConnected, connecting, router]);
+  }, [connected, connecting, router]);
 
   // Show loading while checking authentication
   if (connecting) {
@@ -35,7 +35,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   }
 
   // Show loading while not connected (redirect in progress)
-  if (!isConnected) {
+  if (!connected) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

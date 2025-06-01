@@ -1,42 +1,23 @@
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { StagewiseToolbar } from "@stagewise/toolbar-next";
-import { PhantomWalletProvider } from "@/context/PhantomWalletContext";
+import Providers from "@/components/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "CarbonHub",
   description: "CarbonHub",
 };
 
-const stagewiseConfig = {
-  plugins: [],
-};
-
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <PhantomWalletProvider>
-            {children}
-            {process.env.NODE_ENV === "development" && (
-              <StagewiseToolbar config={stagewiseConfig} />
-            )}
-          </PhantomWalletProvider>
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
