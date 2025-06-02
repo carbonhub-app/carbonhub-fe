@@ -39,7 +39,6 @@ export default function LandingHeader() {
   useEffect(() => {
     if (connected) {
       setError(null);
-      router.push("/dashboard");
     }
   }, [connected]);
 
@@ -104,7 +103,12 @@ export default function LandingHeader() {
 
       const verifyResult: VerifyResponses = await verifyResponse.json();
       if (verifyResult.status === 'success') {
-        alert(`Signed successfully! Public Key: ${publicKey.toBase58()}`);
+        // Store JWT token in localStorage
+        localStorage.setItem('token', verifyResult.data.token);
+        localStorage.setItem('accountType', verifyResult.data.type);
+        localStorage.setItem('publicKey', verifyResult.data.publicKey);
+        
+        router.push("/dashboard");
       } else {
         alert('Signature verification failed.');
       }

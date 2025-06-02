@@ -1,7 +1,15 @@
 import React, { useEffect, useRef, memo } from 'react';
+import { useTheme } from 'next-themes';
 
-function TradingViewWidget() {
-  const container = useRef();
+interface TradingViewWidgetProps {
+  symbol?: string;
+}
+
+const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({ 
+  symbol = "CAPITALCOM:ECFZ2025" 
+}) => {
+  const container = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (container.current) {
@@ -14,20 +22,20 @@ function TradingViewWidget() {
     script.innerHTML = `
       {
         "autosize": true,
-        "symbol": "CAPITALCOM:ECFZ2025",
+        "symbol": "${symbol}",
         "interval": "D",
         "timezone": "Etc/UTC",
-        "theme": "dark",
+        "theme": "${theme === 'dark' ? 'dark' : 'light'}",
         "style": "1",
         "locale": "en",
-        "backgroundColor": "#0f172a",
-        "gridColor": "#334155",
+        "backgroundColor": "${theme === 'dark' ? '#0f172a' : '#ffffff'}",
+        "gridColor": "${theme === 'dark' ? '#334155' : '#e2e8f0'}",
         "support_host": "https://www.tradingview.com",
-        "allow_symbol_change": false,
-        "toolbar_bg": "#1e293b"
+        "allow_symbol_change": true,
+        "toolbar_bg": "${theme === 'dark' ? '#1e293b' : '#f8fafc'}"
       }`;
-    container.current.appendChild(script);
-  }, []);
+    container.current?.appendChild(script);
+  }, [symbol, theme]);
 
   return (
     <div
@@ -41,6 +49,6 @@ function TradingViewWidget() {
       ></div>
     </div>
   );
-}
+};
 
-export default memo(TradingViewWidget);
+export default memo(TradingViewWidget); 
