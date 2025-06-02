@@ -107,19 +107,33 @@ const navItems = [
   },
 ];
 
-export default function DashboardSidebar() {
+type DashboardSidebarProps = {
+  thin?: boolean;
+};
+
+export default function DashboardSidebar({ thin = false }: DashboardSidebarProps) {
   return (
-    <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block">
+    <aside
+      className={
+        thin
+          ? "group/sidebar w-2 hover:w-64 transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block z-30"
+          : "group/sidebar w-64 transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block z-30"
+      }
+    >
       <nav className="py-6">
         <ul className="space-y-1">
           {navItems.map((item) => (
-            <li key={item.href}>
+            <li key={item.href} className="overflow-hidden">
               <Link
                 href={item.href}
-                className="flex items-center px-4 py-3 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md mx-2"
+                className={
+                  thin
+                    ? "flex items-center px-0 group-hover/sidebar:px-4 py-3 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md mx-0 group-hover/sidebar:mx-2 transition-all duration-300"
+                    : "flex items-center px-4 py-3 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md mx-2 transition-all duration-300"
+                }
               >
-                <span className="mr-3">{item.icon}</span>
-                <span>{item.label}</span>
+                <span className={thin ? "mr-0 group-hover/sidebar:mr-3 transition-all duration-300" : "mr-3"}>{item.icon}</span>
+                <span className={thin ? "opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-300" : ""}>{item.label}</span>
               </Link>
             </li>
           ))}
