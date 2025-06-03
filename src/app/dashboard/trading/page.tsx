@@ -41,7 +41,7 @@ export default function DashboardTradingPage() {
         </div>
       </section>
       {/* Place Order Panel on the right */}
-      <section className="w-[350px] bg-white dark:bg-slate-900 rounded-none p-6 shadow-none border-l border-gray-200 dark:border-slate-800 h-full flex flex-col justify-center m-0">
+      <section className="w-[250px] bg-white dark:bg-slate-900 rounded-none p-6 shadow-none border-l border-gray-200 dark:border-slate-800 h-full flex flex-col justify-center m-0">
         <div>
           <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
             Place Order

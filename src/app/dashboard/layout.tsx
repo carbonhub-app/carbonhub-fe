@@ -19,7 +19,7 @@ export default function DashboardLayout({
       <div className="min-h-screen flex flex-col">
         <DashboardHeader />
         <div className="flex flex-1">
-          <DashboardSidebar thin={isTradingPage} />
+          <DashboardSidebar thin={true} />
           <main className={`flex-1${!isTradingPage ? " p-6" : " p-0"}`}>{children}</main>
         </div>
         <DashboardFooter />

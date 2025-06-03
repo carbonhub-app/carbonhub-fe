@@ -116,7 +116,7 @@ export default function DashboardSidebar({ thin = false }: DashboardSidebarProps
     <aside
       className={
         thin
-          ? "group/sidebar w-2 hover:w-64 transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block z-30"
+          ? "group/sidebar w-16 hover:w-64 transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block z-30"
           : "group/sidebar w-64 transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block z-30"
       }
     >
@@ -132,7 +132,11 @@ export default function DashboardSidebar({ thin = false }: DashboardSidebarProps
                     : "flex items-center px-4 py-3 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md mx-2 transition-all duration-300"
                 }
               >
-                <span className={thin ? "mr-0 group-hover/sidebar:mr-3 transition-all duration-300" : "mr-3"}>{item.icon}</span>
+                <span className={
+                  thin
+                    ? "pl-4 mr-0 group-hover/sidebar:pl-0 group-hover/sidebar:mr-3 transition-all duration-300"
+                    : "mr-3"
+                }>{item.icon}</span>
                 <span className={thin ? "opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-300" : ""}>{item.label}</span>
               </Link>
             </li>

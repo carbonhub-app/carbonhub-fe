@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 import dynamic from 'next/dynamic';
@@ -17,7 +18,13 @@ export default function DashboardHeader() {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link href="/dashboard" className="font-bold text-xl">
-              CarbonHub
+              <Image
+                src="/logo-full.png"
+                alt="CarbonHub Logo"
+                width={180}
+                height={50}
+                priority
+              />
             </Link>
           </div>
 
