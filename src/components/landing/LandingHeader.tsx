@@ -3,24 +3,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { TbBuildingFactory } from "react-icons/tb";
+import { TbBuildingFactory, TbUser, TbChevronDown, TbWallet } from "react-icons/tb";
 import gsap from "gsap";
 import Image from "next/image";
 
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import dynamic from 'next/dynamic';
-const WalletMultiButton = dynamic(
-  () => import('@solana/wallet-adapter-react-ui').then((mod) => mod.WalletMultiButton),
-  { ssr: false }
-);
-// import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useRouter } from "next/navigation";
 import { accountTypes, ChallengeResponses, VerifyResponses } from "@/types/wallet";
 
+require('@solana/wallet-adapter-react-ui/styles.css');
+
 export default function LandingHeader() {
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
-  const { publicKey, signMessage, connected, connecting, wallet } = useWallet();
+  const loginDropdownRef = useRef<HTMLDivElement>(null);
+  const { publicKey, signMessage, connected, connecting, wallet, disconnect } = useWallet();
+  const { setVisible: setWalletModalVisible, visible: walletModalVisible } = useWalletModal();
   const [error, setError] = useState<Error | null>(null);
   const router = useRouter();
 
@@ -39,8 +40,25 @@ export default function LandingHeader() {
   useEffect(() => {
     if (connected) {
       setError(null);
+      setWalletModalVisible(false);
     }
-  }, [connected]);
+  }, [connected, setWalletModalVisible]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (loginDropdownRef.current && !loginDropdownRef.current.contains(event.target as Node)) {
+        setLoginDropdownOpen(false);
+      }
+    };
+
+    if (loginDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [loginDropdownOpen]);
 
   useEffect(() => {
     if (headerRef.current) {
@@ -67,7 +85,8 @@ export default function LandingHeader() {
 
   const handleLogin = async (accountType: accountTypes) => {
     if (!publicKey || !signMessage) {
-      alert('Please connect your wallet first.');
+      setWalletModalVisible(true);
+      alert('Please connect your wallet first through the "Select Wallet" button.');
       return;
     }
 
@@ -103,7 +122,6 @@ export default function LandingHeader() {
 
       const verifyResult: VerifyResponses = await verifyResponse.json();
       if (verifyResult.status === 'success') {
-        // Store JWT token in localStorage
         localStorage.setItem('token', verifyResult.data.token);
         localStorage.setItem('accountType', verifyResult.data.type);
         localStorage.setItem('publicKey', verifyResult.data.publicKey);
@@ -120,10 +138,20 @@ export default function LandingHeader() {
 
   const handleUserLogin = () => {
     handleLogin("user");
+    setLoginDropdownOpen(false);
   };
 
   const handleCompanyLogin = () => {
     handleLogin("company");
+    setLoginDropdownOpen(false);
+  };
+
+  const handleWalletButtonClick = () => {
+    if (connected && publicKey) {
+      disconnect().catch(e => console.error("Error disconnecting", e));
+    } else {
+      setWalletModalVisible(true);
+    }
   };
 
   return (
@@ -132,7 +160,6 @@ export default function LandingHeader() {
       className="fixed inset-x-0 top-6 z-50 flex justify-center pointer-events-none"
     >
       <nav className="pointer-events-auto bg-black/70 backdrop-blur-md shadow-xl rounded-4xl max-w-7xl w-[95vw] mx-auto px-6 py-3 flex items-center justify-between gap-4 border border-white/10">
-        {/* Logo */}
         <Link href="/" className="flex-shrink-0">
           <Image
             src="/logo-full.png"
@@ -143,7 +170,6 @@ export default function LandingHeader() {
           />
         </Link>
 
-        {/* Desktop Nav */}
         <ul className="hidden md:flex flex-1 justify-center items-center gap-8">
           <li>
             <Link
@@ -171,45 +197,57 @@ export default function LandingHeader() {
           </li>
         </ul>
 
-        {/* CTA - Wallet Connection */}
-        <div className="hidden md:flex items-center gap-4">
-          <Button
-            onClick={handleUserLogin}
-            disabled={connecting}
-            variant="outline"
-            className="text-white/80 border-white/20 hover:border-primary hover:text-primary bg-transparent"
-          >
-            {connecting ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Connecting...
+        <div className="hidden md:flex items-center gap-3">
+          <div className="relative" ref={loginDropdownRef}>
+            <Button
+              onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+              disabled={connecting}
+              variant="outline"
+              className="text-white/80 border-white/20 hover:border-primary hover:text-primary bg-transparent flex items-center gap-2 px-4 py-2 h-10"
+            >
+              {connecting && !connected ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Connecting...
+                </div>
+              ) : (
+                <>
+                  Login
+                  <TbChevronDown className={`transition-transform duration-200 ${loginDropdownOpen ? 'rotate-180' : ''}`} />
+                </>
+              )}
+            </Button>
+            
+            {loginDropdownOpen && (
+              <div className="absolute top-full mt-2 right-0 bg-black/90 backdrop-blur-md border border-white/20 rounded-lg shadow-xl overflow-hidden min-w-[160px] z-50">
+                <button
+                  onClick={handleUserLogin}
+                  className="w-full px-4 py-3 text-left text-white/90 hover:bg-white/10 transition-colors duration-200 flex items-center gap-2 font-medium"
+                >
+                  <TbUser className="text-lg" />
+                  User Login
+                </button>
+                <button
+                  onClick={handleCompanyLogin}
+                  className="w-full px-4 py-3 text-left text-white/90 hover:bg-white/10 transition-colors duration-200 flex items-center gap-2 font-medium border-t border-white/10"
+                >
+                  <TbBuildingFactory className="text-lg" />
+                  Company Login
+                </button>
               </div>
-            ) : (
-              <div className="flex items-center gap-2">User Login</div>
             )}
-          </Button>
+          </div>
+          
           <Button
-            onClick={handleCompanyLogin}
+            onClick={handleWalletButtonClick}
             disabled={connecting}
-            size="sm"
-            className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+            className="text-white flex items-center gap-2 px-4 py-2 h-10"
           >
-            {connecting ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Connecting...
-              </div>
-            ) : (
-              <>
-                Company Login{" "}
-                <TbBuildingFactory className="ml-1 text-lg" />
-              </>
-            )}
+            <TbWallet className="text-lg" />
+            {connected && publicKey ? truncateAddress(publicKey.toBase58()) : (connecting ? 'Connecting...' : 'Select Wallet')}
           </Button>
-          <WalletMultiButton />
         </div>
 
-        {/* Hamburger */}
         <button
           className="md:hidden flex items-center justify-center text-white hover:text-primary transition-colors duration-200 focus:outline-none"
           aria-label="Toggle menu"
@@ -230,7 +268,6 @@ export default function LandingHeader() {
           </svg>
         </button>
 
-        {/* Mobile Menu */}
         {menuOpen && (
           <div className="absolute top-16 left-0 w-full flex justify-center md:hidden z-50">
             <div className="bg-black/90 backdrop-blur-md rounded-xl shadow-lg py-4 px-6 flex flex-col items-center gap-4 border border-white/10 max-w-xs w-[90vw]">
@@ -255,68 +292,70 @@ export default function LandingHeader() {
               >
                 Why Carbon Hub
               </Link>
+              
               {!connected ? (
-                <>
+                <div className="w-full flex flex-col gap-3">
                   <Button
-                    onClick={() => {
-                      handleUserLogin();
-                      setMenuOpen(false);
-                    }}
+                    onClick={() => { handleUserLogin(); setMenuOpen(false); }}
                     disabled={connecting}
-                    className="w-full bg-primary text-white font-semibold flex items-center gap-2 justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+                    variant="outline"
+                    className="w-full text-white/80 border-white/20 hover:border-primary hover:text-primary bg-transparent flex items-center gap-2 justify-center h-10"
                   >
-                    {connecting ? (
+                    {connecting && !connected ? (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         Connecting...
                       </div>
-                    ) : (
-                      <>User Login</>
-                    )}
+                    ) : ( <><TbUser className="text-lg" /> User Login</> )}
                   </Button>
                   <Button
-                    onClick={() => {
-                      handleCompanyLogin();
-                      setMenuOpen(false);
-                    }}
+                    onClick={() => { handleCompanyLogin(); setMenuOpen(false); }}
                     disabled={connecting}
-                    className="w-full bg-primary text-white font-semibold flex items-center gap-2 justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+                    variant="outline"
+                    className="w-full text-white/80 border-white/20 hover:border-primary hover:text-primary bg-transparent flex items-center gap-2 justify-center h-10"
                   >
-                    {connecting ? (
+                     {connecting && !connected ? (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         Connecting...
                       </div>
-                    ) : (
-                      <>Company Login</>
-                    )}
+                    ) : ( <><TbBuildingFactory className="text-lg" /> Company Login</>)}
                   </Button>
-                </>
+                  <Button
+                    onClick={() => { handleWalletButtonClick(); setMenuOpen(false); }}
+                    disabled={connecting}
+                    className="w-full text-white flex items-center gap-2 justify-center h-10"
+                  >
+                    <TbWallet className="text-lg" />
+                    {connecting ? 'Connecting...' : 'Select Wallet'}
+                  </Button>
+                </div>
               ) : (
                 <div className="w-full flex flex-col gap-2">
                   <div className="text-white/80 text-sm text-center">
                     {truncateAddress(publicKey?.toBase58() || "")}
                   </div>
-                  <Link
-                    href="/dashboard"
-                    className="w-full"
-                    onClick={() => setMenuOpen(false)}
+                  <Button
+                    onClick={handleWalletButtonClick}
+                    className="w-full text-white flex items-center gap-2 justify-center h-10"
                   >
+                    <TbWallet className="text-lg" />
+                    Disconnect
+                  </Button>
+                  <Link href="/dashboard" className="w-full" onClick={() => setMenuOpen(false)}>
                     <Button
                       size="sm"
-                      className="bg-primary text-white font-semibold flex items-center gap-2 w-full justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+                      className="bg-primary text-white font-semibold flex items-center gap-2 w-full justify-center rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200 h-10"
                     >
                       Dashboard <TbBuildingFactory className="ml-1 text-lg" />
                     </Button>
                   </Link>
                 </div>
               )}
-              <WalletMultiButton />
             </div>
           </div>
         )}
 
-        {/* Error Display */}
         {error && (
           <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-red-500/90 text-white px-4 py-2 rounded-lg text-sm max-w-xs text-center">
             {error.message}
