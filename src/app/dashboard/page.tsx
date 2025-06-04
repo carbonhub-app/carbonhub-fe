@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@solana/wallet-adapter-react";
 
@@ -9,6 +9,30 @@ import { userDatas } from "@/types/wallet";
 export default function DashboardPage() {
   const [userData, setUserData] = useState<userDatas | null>(null);
   const { publicKey } = useWallet();
+
+  // Load user data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('userData');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        // Convert string dates back to Date objects
+        if (parsedData.connectedAt) {
+          parsedData.connectedAt = new Date(parsedData.connectedAt);
+        }
+        setUserData(parsedData);
+      } catch (error) {
+        console.error('Error parsing user data from localStorage:', error);
+      }
+    }
+  }, []);
+
+  // Save user data to localStorage whenever it changes
+  useEffect(() => {
+    if (userData) {
+      localStorage.setItem('userData', JSON.stringify(userData));
+    }
+  }, [userData]);
 
   // Helper function to truncate wallet address
   const truncateAddress = (address: string) => {

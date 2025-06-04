@@ -72,7 +72,7 @@ export default function LandingHeader() {
     }
 
     try {
-      const challengeResponse = await fetch('https://api.carbonhub.app/auth/request-challenge',  {
+      const challengeResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + '/auth/request-challenge',  {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -91,7 +91,7 @@ export default function LandingHeader() {
       const encodedMessage = new TextEncoder().encode(challengeMessage);
       const signature = await signMessage(encodedMessage);
 
-      const verifyResponse = await fetch('https://api.carbonhub.app/auth/verify-signature',  {
+      const verifyResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + '/auth/verify-signature',  {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

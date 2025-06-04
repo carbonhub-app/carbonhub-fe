@@ -116,8 +116,8 @@ export default function DashboardSidebar({ thin = false }: DashboardSidebarProps
     <aside
       className={
         thin
-          ? "group/sidebar w-16 hover:w-64 transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block z-30"
-          : "group/sidebar w-64 transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block z-30"
+          ? "group/sidebar w-16 hover:w-64 transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block z-10"
+          : "group/sidebar w-64 transition-all duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 overflow-y-auto hidden md:block z-10"
       }
     >
       <nav className="py-6">
