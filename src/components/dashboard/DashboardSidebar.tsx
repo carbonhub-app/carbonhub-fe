@@ -2,8 +2,35 @@
 
 import React from "react";
 import Link from "next/link";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { usePathname, useRouter } from "next/navigation";
 
-const navItems = [
+// Only Trading for user accounts
+const userNavItems = [
+  {
+    label: "Trading",
+    href: "/dashboard/trading",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <line x1="12" y1="2" x2="12" y2="22"></line>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+      </svg>
+    ),
+  },
+];
+
+// Full navigation for company accounts
+const companyNavItems = [
   {
     label: "Dashboard",
     href: "/dashboard",
@@ -112,6 +139,26 @@ type DashboardSidebarProps = {
 };
 
 export default function DashboardSidebar({ thin = false }: DashboardSidebarProps) {
+  const { publicKey } = useWallet();
+  const pathname = usePathname();
+  const router = useRouter();
+  const [accountType, setAccountType] = React.useState<"user" | "company">("user");
+
+  // Load account type from localStorage when wallet is connected
+  React.useEffect(() => {
+    if (publicKey) {
+      const storedAccountType = localStorage.getItem('accountType');
+      if (storedAccountType === "company") {
+        setAccountType("company");
+      } else {
+        setAccountType("user");
+      }
+    }
+  }, [publicKey]);
+
+  // Force user accounts to only see Trading
+  const navItems = accountType === "company" ? companyNavItems : userNavItems;
+
   return (
     <aside
       className={

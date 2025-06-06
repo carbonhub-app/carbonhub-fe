@@ -4,14 +4,33 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { TbWallet } from "react-icons/tb";
+import { Button } from "@/components/ui/button";
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
-import dynamic from 'next/dynamic';
-const WalletMultiButton = dynamic(
-  () => import('@solana/wallet-adapter-react-ui').then((mod) => mod.WalletMultiButton),
-  { ssr: false }
-);
+require('@solana/wallet-adapter-react-ui/styles.css');
 
 export default function DashboardHeader() {
+  const { publicKey, connecting, connected, disconnect } = useWallet();
+  const { setVisible: setWalletModalVisible, visible: walletModalVisible } = useWalletModal();
+
+  const truncateAddress = (address: string) => {
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  };
+
+  const handleWalletButtonClick = () => {
+    if (connected && publicKey) {
+      // Clear localStorage before disconnecting
+      localStorage.removeItem('accountType');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('token');
+      disconnect().catch(e => console.error("Error disconnecting", e));
+    } else {
+      setWalletModalVisible(true);
+    }
+  };
+
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20">
       <div className="container mx-auto px-4 py-3">
@@ -53,29 +72,14 @@ export default function DashboardHeader() {
 
             <ThemeToggle />
 
-            {/*
-            <div className="relative">
-              <button className="flex items-center space-x-1">
-                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-sm font-medium">
-                  JD
-                </div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </button>
-            </div>
-             */}
-            <WalletMultiButton className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"/>
+            <Button
+              onClick={handleWalletButtonClick}
+              disabled={connecting}
+              className="bg-primary text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow-md hover:bg-primary/90 transition-all duration-200"
+            >
+              <TbWallet className="text-lg" />
+              {connected && publicKey ? truncateAddress(publicKey.toBase58()) : (connecting ? 'Connecting...' : 'Select Wallet')}
+            </Button>
           </div>
         </div>
       </div>

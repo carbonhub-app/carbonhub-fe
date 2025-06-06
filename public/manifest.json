@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "CarbonHub",
+  "short_name": "CarbonHub",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
